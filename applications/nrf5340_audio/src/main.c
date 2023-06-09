@@ -40,6 +40,29 @@ extern struct k_thread z_main_thread;
 static atomic_t ble_core_is_ready = (atomic_t) false;
 static struct board_version board_rev;
 
+uint8_t config_audio_dev_var = 0xff;
+
+static int config_audio_dev_select(void)
+{
+	int ret;
+	bool pressed;
+
+	ret = button_pressed(BUTTON_4, &pressed);
+	if (ret) {
+		return ret;
+	}
+
+	if (pressed) {
+		config_audio_dev_var = HEADSET;
+	}
+	else
+	{
+		config_audio_dev_var = GATEWAY;
+	}
+	return 0;
+}
+
+
 static int hfclock_config_and_start(void)
 {
 	int ret;
@@ -69,26 +92,30 @@ static int leds_set(void)
 		return ret;
 	}
 
-#if (CONFIG_AUDIO_DEV == HEADSET)
-	enum audio_channel channel;
+	if (config_audio_dev_var == HEADSET)
+	{
 
-	channel_assignment_get(&channel);
+		enum audio_channel channel;
 
-	if (channel == AUDIO_CH_L) {
-		ret = led_on(LED_APP_RGB, LED_COLOR_BLUE);
-	} else {
-		ret = led_on(LED_APP_RGB, LED_COLOR_MAGENTA);
-	}
+		channel_assignment_get(&channel);
 
-	if (ret) {
-		return ret;
+		if (channel == AUDIO_CH_L) {
+			ret = led_on(LED_APP_RGB, LED_COLOR_BLUE);
+		} else {
+			ret = led_on(LED_APP_RGB, LED_COLOR_MAGENTA);
+		}
+
+		if (ret) {
+			return ret;
+		}
 	}
-#elif (CONFIG_AUDIO_DEV == GATEWAY)
-	ret = led_on(LED_APP_RGB, LED_COLOR_GREEN);
-	if (ret) {
-		return ret;
+	else if (config_audio_dev_var == GATEWAY)
+	{
+		ret = led_on(LED_APP_RGB, LED_COLOR_GREEN);
+		if (ret) {
+			return ret;
+		}
 	}
-#endif /* (CONFIG_AUDIO_DEV == HEADSET) */
 
 	return 0;
 }
@@ -114,30 +141,33 @@ static int bonding_clear_check(void)
 
 static int channel_assign_check(void)
 {
-#if (CONFIG_AUDIO_DEV == HEADSET) && CONFIG_AUDIO_HEADSET_CHANNEL_RUNTIME
-	int ret;
-	bool pressed;
+	if (config_audio_dev_var == HEADSET)
+	{
+#if CONFIG_AUDIO_HEADSET_CHANNEL_RUNTIME
+		int ret;
+		bool pressed;
 
-	ret = button_pressed(BUTTON_VOLUME_DOWN, &pressed);
-	if (ret) {
-		return ret;
-	}
+		ret = button_pressed(BUTTON_VOLUME_DOWN, &pressed);
+		if (ret) {
+			return ret;
+		}
 
-	if (pressed) {
-		channel_assignment_set(AUDIO_CH_L);
-		return 0;
-	}
+		if (pressed) {
+			channel_assignment_set(AUDIO_CH_L);
+			return 0;
+		}
 
-	ret = button_pressed(BUTTON_VOLUME_UP, &pressed);
-	if (ret) {
-		return ret;
-	}
+		ret = button_pressed(BUTTON_VOLUME_UP, &pressed);
+		if (ret) {
+			return ret;
+		}
 
-	if (pressed) {
-		channel_assignment_set(AUDIO_CH_R);
-		return 0;
-	}
+		if (pressed) {
+			channel_assignment_set(AUDIO_CH_R);
+			return 0;
+		}
 #endif
+	}
 
 	return 0;
 }
@@ -171,6 +201,8 @@ void main(void)
 
 	ret = button_handler_init();
 	ERR_CHK(ret);
+
+	config_audio_dev_select();
 
 	channel_assignment_init();
 

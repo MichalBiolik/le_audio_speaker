@@ -548,6 +548,8 @@ static void alt_buffer_free_both(void)
 	alt.buf_1_in_use = false;
 }
 
+extern uint8_t config_audio_dev_var;
+
 /*
  * This handler function is called every time I2S needs new buffers for
  * TX and RX data.
@@ -573,7 +575,7 @@ static void audio_datapath_i2s_blk_complete(uint32_t frame_start_ts, uint32_t *r
 	/********** I2S TX **********/
 	static uint8_t *tx_buf;
 
-	if (IS_ENABLED(CONFIG_STREAM_BIDIRECTIONAL) || (CONFIG_AUDIO_DEV == HEADSET)) {
+	if (IS_ENABLED(CONFIG_STREAM_BIDIRECTIONAL) || (config_audio_dev_var == HEADSET)) {
 		if (tx_buf_released != NULL) {
 			/* Double buffered index */
 			uint32_t next_out_blk_idx = NEXT_IDX(ctrl_blk.out.cons_blk_idx);
@@ -622,7 +624,7 @@ static void audio_datapath_i2s_blk_complete(uint32_t frame_start_ts, uint32_t *r
 	static uint32_t *rx_buf;
 	static int prev_ret;
 
-	if (IS_ENABLED(CONFIG_STREAM_BIDIRECTIONAL) || (CONFIG_AUDIO_DEV == GATEWAY)) {
+	if (IS_ENABLED(CONFIG_STREAM_BIDIRECTIONAL) || (config_audio_dev_var == GATEWAY)) {
 		/* Lock last filled buffer into message queue */
 		if (rx_buf_released != NULL) {
 			ret = data_fifo_block_lock(ctrl_blk.in.fifo, (void **)&rx_buf_released,
@@ -680,7 +682,7 @@ static void audio_datapath_i2s_start(void)
 	uint32_t *rx_buf_two = NULL;
 
 	/* TX */
-	if (IS_ENABLED(CONFIG_STREAM_BIDIRECTIONAL) || (CONFIG_AUDIO_DEV == HEADSET)) {
+	if (IS_ENABLED(CONFIG_STREAM_BIDIRECTIONAL) || (config_audio_dev_var == HEADSET)) {
 		ctrl_blk.out.cons_blk_idx = PREV_IDX(ctrl_blk.out.cons_blk_idx);
 		tx_buf_one = (uint8_t *)&ctrl_blk.out
 				     .fifo[ctrl_blk.out.cons_blk_idx * BLK_STEREO_NUM_SAMPS];
@@ -691,7 +693,7 @@ static void audio_datapath_i2s_start(void)
 	}
 
 	/* RX */
-	if (IS_ENABLED(CONFIG_STREAM_BIDIRECTIONAL) || (CONFIG_AUDIO_DEV == GATEWAY)) {
+	if (IS_ENABLED(CONFIG_STREAM_BIDIRECTIONAL) || (config_audio_dev_var == GATEWAY)) {
 		uint32_t alloced_cnt;
 		uint32_t locked_cnt;
 

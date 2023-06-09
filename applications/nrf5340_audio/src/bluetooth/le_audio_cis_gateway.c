@@ -1237,17 +1237,17 @@ static int initialize(le_audio_receive_cb recv_cb)
 	return 0;
 }
 
-int le_audio_user_defined_button_press(enum le_audio_user_defined_action action)
+int le_audio_user_defined_button_press_gateway(enum le_audio_user_defined_action action)
 {
 	return 0;
 }
 
-int le_audio_config_get(uint32_t *bitrate, uint32_t *sampling_rate)
+int le_audio_config_get_gateway(uint32_t *bitrate, uint32_t *sampling_rate)
 {
 	return 0;
 }
 
-int le_audio_volume_up(void)
+int le_audio_volume_up_gateway(void)
 {
 	int ret;
 
@@ -1260,7 +1260,7 @@ int le_audio_volume_up(void)
 	return 0;
 }
 
-int le_audio_volume_down(void)
+int le_audio_volume_down_gateway(void)
 {
 	int ret;
 
@@ -1273,7 +1273,7 @@ int le_audio_volume_down(void)
 	return 0;
 }
 
-int le_audio_volume_mute(void)
+int le_audio_volume_mute_gateway(void)
 {
 	int ret;
 
@@ -1286,7 +1286,7 @@ int le_audio_volume_mute(void)
 	return 0;
 }
 
-int le_audio_play_pause(void)
+int le_audio_play_pause_gateway(void)
 {
 	int ret;
 
@@ -1303,7 +1303,7 @@ int le_audio_play_pause(void)
 	return 0;
 }
 
-int le_audio_send(struct encoded_audio enc_audio)
+int le_audio_send_gateway(struct encoded_audio enc_audio)
 {
 	int ret;
 	size_t data_size_pr_stream;
@@ -1362,7 +1362,7 @@ int le_audio_send(struct encoded_audio enc_audio)
 	return 0;
 }
 
-int le_audio_enable(le_audio_receive_cb recv_cb)
+int le_audio_enable_gateway(le_audio_receive_cb recv_cb)
 {
 	int ret;
 
@@ -1375,7 +1375,7 @@ int le_audio_enable(le_audio_receive_cb recv_cb)
 	return 0;
 }
 
-int le_audio_disable(void)
+int le_audio_disable_gateway(void)
 {
 	return 0;
 }

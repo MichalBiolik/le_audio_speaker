@@ -272,18 +272,20 @@ int audio_decode(void const *const encoded_data, size_t encoded_data_size, bool 
 	return 0;
 }
 
+extern uint8_t config_audio_dev_var;
+
 /**@brief Initializes the FIFOs, the codec, and starts the I2S
  */
 void audio_system_start(void)
 {
 	int ret;
 
-	if (CONFIG_AUDIO_DEV == HEADSET) {
+	if (config_audio_dev_var == HEADSET) {
 		audio_headset_configure();
-	} else if (CONFIG_AUDIO_DEV == GATEWAY) {
+	} else if (config_audio_dev_var == GATEWAY) {
 		audio_gateway_configure();
 	} else {
-		LOG_ERR("Invalid CONFIG_AUDIO_DEV: %d", CONFIG_AUDIO_DEV);
+		LOG_ERR("Invalid config_audio_dev_var: %d", config_audio_dev_var);
 		ERR_CHK(-EINVAL);
 	}
 
@@ -312,16 +314,19 @@ void audio_system_start(void)
 		ERR_CHK(ret);
 	}
 
-#if ((CONFIG_AUDIO_SOURCE_USB) && (CONFIG_AUDIO_DEV == GATEWAY))
-	ret = audio_usb_start(&fifo_tx, &fifo_rx);
-	ERR_CHK(ret);
-#else
-	ret = hw_codec_default_conf_enable();
-	ERR_CHK(ret);
+	if ((CONFIG_AUDIO_SOURCE_USB) && (config_audio_dev_var == GATEWAY))
+	{
+		ret = audio_usb_start(&fifo_tx, &fifo_rx);
+		ERR_CHK(ret);
+	}
+	else
+	{
+		ret = hw_codec_default_conf_enable();
+		ERR_CHK(ret);
 
-	ret = audio_datapath_start(&fifo_rx);
-	ERR_CHK(ret);
-#endif /* ((CONFIG_AUDIO_SOURCE_USB) && (CONFIG_AUDIO_DEV == GATEWAY))) */
+		ret = audio_datapath_start(&fifo_rx);
+		ERR_CHK(ret);
+	}
 }
 
 void audio_system_stop(void)
@@ -335,15 +340,18 @@ void audio_system_stop(void)
 
 	LOG_DBG("Stopping codec");
 
-#if ((CONFIG_AUDIO_DEV == GATEWAY) && CONFIG_AUDIO_SOURCE_USB)
-	audio_usb_stop();
-#else
-	ret = hw_codec_soft_reset();
-	ERR_CHK(ret);
+	if ((config_audio_dev_var == GATEWAY) && CONFIG_AUDIO_SOURCE_USB)
+	{
+		audio_usb_stop();
+	}
+	else
+	{
+		ret = hw_codec_soft_reset();
+		ERR_CHK(ret);
 
-	ret = audio_datapath_stop();
-	ERR_CHK(ret);
-#endif /* ((CONFIG_AUDIO_DEV == GATEWAY) && CONFIG_AUDIO_SOURCE_USB) */
+		ret = audio_datapath_stop();
+		ERR_CHK(ret);
+	}
 
 	ret = sw_codec_uninit(sw_codec_cfg);
 	ERR_CHK_MSG(ret, "Failed to uninit codec");
@@ -375,16 +383,19 @@ void audio_system_init(void)
 {
 	int ret;
 
-#if ((CONFIG_AUDIO_DEV == GATEWAY) && (CONFIG_AUDIO_SOURCE_USB))
-	ret = audio_usb_init();
-	ERR_CHK(ret);
-#else
-	ret = audio_datapath_init();
-	ERR_CHK(ret);
-	audio_i2s_init();
-	ret = hw_codec_init();
-	ERR_CHK(ret);
-#endif
+	if ((config_audio_dev_var == GATEWAY) && (CONFIG_AUDIO_SOURCE_USB))
+	{
+		ret = audio_usb_init();
+		ERR_CHK(ret);
+	}
+	else
+	{
+		ret = audio_datapath_init();
+		ERR_CHK(ret);
+		audio_i2s_init();
+		ret = hw_codec_init();
+		ERR_CHK(ret);
+	}
 }
 
 static int cmd_audio_system_start(const struct shell *shell, size_t argc, const char **argv)

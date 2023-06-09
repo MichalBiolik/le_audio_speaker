@@ -73,17 +73,17 @@ config NVS_LOG_LEVEL
 	default 2
 
 # HEADSET
-if AUDIO_DEV = 1
+# if AUDIO_DEV = 1
 
 config BT_AUDIO_UNICAST_SERVER
 	default y
 
-config BT_MAX_CONN
-	default 1
+# config BT_MAX_CONN
+# 	default 1
 
-config BT_ISO_MAX_CHAN
-	default 2 if STREAM_BIDIRECTIONAL
-	default 1
+# config BT_ISO_MAX_CHAN
+# 	default 2 if STREAM_BIDIRECTIONAL
+# 	default 1
 
 config BT_ASCS_ASE_SNK_COUNT
 	default 1
@@ -95,9 +95,9 @@ config BT_ASCS_ASE_SRC_COUNT
 config BT_PERIPHERAL
 	default y
 
-config BT_DEVICE_APPEARANCE
-	# Generic Audio Sink - 0x0840
-	default 2112
+# config BT_DEVICE_APPEARANCE
+# 	# Generic Audio Sink - 0x0840
+# 	default 2112
 
 config BT_GAP_PERIPHERAL_PREF_PARAMS
 	default n
@@ -129,7 +129,7 @@ config BT_CAP_ACCEPTOR_SET_MEMBER
 	bool
 	default y
 
-endif # AUDIO_DEV = 1 (HEADSET)
+# endif # AUDIO_DEV = 1 (HEADSET)
 
 # GATEWAY
 if AUDIO_DEV = 2
