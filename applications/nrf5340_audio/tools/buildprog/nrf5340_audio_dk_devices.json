@@ -10,6 +10,11 @@
         "channel": "left"
  },
  {
+        "nrf5340_audio_dk_snr": 1050188991,
+        "nrf5340_audio_dk_dev": "gateway",
+        "channel": "left"
+ },
+ {
         "nrf5340_audio_dk_snr": 1000,
         "nrf5340_audio_dk_dev": "headset",
         "channel": "right"

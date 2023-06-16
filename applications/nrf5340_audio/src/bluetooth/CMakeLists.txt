@@ -33,7 +33,9 @@ elseif (CONFIG_TRANSPORT_BIS)
 	# GATEWAY
 	elseif (CONFIG_AUDIO_DEV EQUAL 2)
 		target_sources(app PRIVATE
-			${CMAKE_CURRENT_SOURCE_DIR}/le_audio_bis_gateway.c)
+			${CMAKE_CURRENT_SOURCE_DIR}/le_audio_bis_gateway.c
+			${CMAKE_CURRENT_SOURCE_DIR}/le_audio_bis_headset.c
+			${CMAKE_CURRENT_SOURCE_DIR}/le_audio.c)
 	else()
 		message(FATAL_ERROR "GATEWAY or HEADSET device must be chosen")
 	endif()

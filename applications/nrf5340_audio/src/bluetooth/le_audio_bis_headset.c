@@ -488,7 +488,7 @@ static int change_active_brdcast_src(void)
 	return 0;
 }
 
-int le_audio_user_defined_button_press(enum le_audio_user_defined_action action)
+int le_audio_user_defined_button_press_headset(enum le_audio_user_defined_action action)
 {
 	int ret;
 
@@ -506,7 +506,7 @@ int le_audio_user_defined_button_press(enum le_audio_user_defined_action action)
 	return ret;
 }
 
-int le_audio_config_get(uint32_t *bitrate, uint32_t *sampling_rate)
+int le_audio_config_get_headset(uint32_t *bitrate, uint32_t *sampling_rate)
 {
 	if (active_stream.codec == NULL) {
 		return -ECANCELED;
@@ -518,7 +518,7 @@ int le_audio_config_get(uint32_t *bitrate, uint32_t *sampling_rate)
 	return 0;
 }
 
-int le_audio_volume_up(void)
+int le_audio_volume_up_headset(void)
 {
 	if (active_stream.stream->ep->status.state != BT_AUDIO_EP_STATE_STREAMING) {
 		return -ECANCELED;
@@ -527,7 +527,7 @@ int le_audio_volume_up(void)
 	return hw_codec_volume_increase();
 }
 
-int le_audio_volume_down(void)
+int le_audio_volume_down_headset(void)
 {
 	if (active_stream.stream->ep->status.state != BT_AUDIO_EP_STATE_STREAMING) {
 		return -ECANCELED;
@@ -536,7 +536,7 @@ int le_audio_volume_down(void)
 	return hw_codec_volume_decrease();
 }
 
-int le_audio_volume_mute(void)
+int le_audio_volume_mute_headset(void)
 {
 	if (active_stream.stream->ep->status.state != BT_AUDIO_EP_STATE_STREAMING) {
 		return -ECANCELED;
@@ -545,7 +545,7 @@ int le_audio_volume_mute(void)
 	return hw_codec_volume_mute();
 }
 
-int le_audio_play_pause(void)
+int le_audio_play_pause_headset(void)
 {
 	int ret;
 
@@ -564,13 +564,13 @@ int le_audio_play_pause(void)
 	return 0;
 }
 
-int le_audio_send(struct encoded_audio enc_audio)
+int le_audio_send_headset(struct encoded_audio enc_audio)
 {
 	LOG_WRN("Not possible to send audio data from broadcast sink");
 	return -ENXIO;
 }
 
-int le_audio_enable(le_audio_receive_cb recv_cb)
+int le_audio_enable_headset(le_audio_receive_cb recv_cb)
 {
 	int ret;
 
@@ -594,7 +594,7 @@ int le_audio_enable(le_audio_receive_cb recv_cb)
 	return 0;
 }
 
-int le_audio_disable(void)
+int le_audio_disable_headset(void)
 {
 	int ret;
 

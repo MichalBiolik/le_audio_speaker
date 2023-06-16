@@ -25,7 +25,7 @@ config CMSIS_DSP_FASTMATH
 	default y
 
 # HEADSET
-if AUDIO_DEV = 1
+# if AUDIO_DEV = 1
 
 if TRANSPORT_CIS # Depends on TRANSPORT_CIS
 
@@ -35,13 +35,13 @@ config LC3_BITRATE
 
 endif # TRANSPORT_CIS
 
-config LC3_ENC_CHAN_MAX
-	int
-	default 1
+# config LC3_ENC_CHAN_MAX
+# 	int
+# 	default 1
 
-config LC3_DEC_CHAN_MAX
-	int
-	default 1
+# config LC3_DEC_CHAN_MAX
+# 	int
+# 	default 1
 
 if TRANSPORT_BIS # Depends on TRANSPORT_BIS
 
@@ -53,7 +53,7 @@ config AUDIO_MUTE
 
 endif # TRANSPORT_BIS
 
-endif # AUDIO_DEV = 1 (HEADSET)
+# endif # AUDIO_DEV = 1 (HEADSET)
 
 # GATEWAY
 if AUDIO_DEV = 2
