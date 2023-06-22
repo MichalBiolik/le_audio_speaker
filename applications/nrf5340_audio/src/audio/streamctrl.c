@@ -124,26 +124,26 @@ static void le_audio_rx_data_handler(uint8_t const *const p_data, size_t data_si
 	int ret;
 	struct ble_iso_data *iso_received = NULL;
 
-	if (config_audio_dev_var == GATEWAY)
-	{
-		static uint32_t packet_count_r;
-		switch (channel_index) {
-		case AUDIO_CH_L:
-			/* Proceed */
-			break;
-		case AUDIO_CH_R:
+	// if (config_audio_dev_var == GATEWAY)
+	// {
+	// 	static uint32_t packet_count_r;
+	// 	switch (channel_index) {
+	// 	case AUDIO_CH_L:
+	// 		/* Proceed */
+	// 		break;
+	// 	case AUDIO_CH_R:
 
-			packet_count_r++;
-			if ((packet_count_r % 1000) == 0) {
-				LOG_DBG("Packets received from right channel: %d", packet_count_r);
-			}
+	// 		packet_count_r++;
+	// 		if ((packet_count_r % 1000) == 0) {
+	// 			LOG_DBG("Packets received from right channel: %d", packet_count_r);
+	// 		}
 
-			return;
-		default:
-			LOG_ERR("Channel index not supported");
-			return;
-		}
-	}
+	// 		return;
+	// 	default:
+	// 		LOG_ERR("Channel index not supported");
+	// 		return;
+	// 	}
+	// }
 
 #if (CONFIG_BLE_ISO_TEST_PATTERN)
 	ble_test_pattern_receive(p_data, data_size, bad_frame);
@@ -208,12 +208,10 @@ static void audio_datapath_thread(void *dummy1, void *dummy2, void *dummy3)
 					iso_received->bad_frame);
 			ERR_CHK(ret);
 		}
-		else
-		{
-			audio_datapath_stream_out(iso_received->data, iso_received->data_size,
-						iso_received->sdu_ref, iso_received->bad_frame,
-						iso_received->recv_frame_ts);
-		}
+
+		audio_datapath_stream_out(iso_received->data, iso_received->data_size,
+					iso_received->sdu_ref, iso_received->bad_frame,
+					iso_received->recv_frame_ts);
 		data_fifo_block_free(&ble_fifo_rx, (void *)&iso_received);
 
 		STACK_USAGE_PRINT("audio_datapath_thread", &audio_datapath_thread_data);

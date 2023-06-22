@@ -267,8 +267,8 @@ int hw_codec_default_conf_enable(void)
 #endif
 	}
 
-	if (config_audio_dev_var == HEADSET)
-	{
+	// if (config_audio_dev_var == HEADSET)
+	// {
 #if (CONFIG_STREAM_BIDIRECTIONAL)
 	ret = cs47l63_comm_reg_conf_write(pdm_mic_enable_configure,
 					  ARRAY_SIZE(pdm_mic_enable_configure));
@@ -276,7 +276,7 @@ int hw_codec_default_conf_enable(void)
 		return ret;
 	}
 #endif
-	}
+	// }
 
 	/* Toggle FLL to start up CS47L63 */
 	ret = cs47l63_comm_reg_conf_write(FLL_toggle, ARRAY_SIZE(FLL_toggle));

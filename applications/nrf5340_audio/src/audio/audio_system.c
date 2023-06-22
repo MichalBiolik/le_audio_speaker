@@ -280,8 +280,8 @@ void audio_system_start(void)
 {
 	int ret;
 
+	audio_headset_configure();
 	if (config_audio_dev_var == HEADSET) {
-		audio_headset_configure();
 	} else if (config_audio_dev_var == GATEWAY) {
 		audio_gateway_configure();
 	} else {
@@ -319,14 +319,12 @@ void audio_system_start(void)
 		ret = audio_usb_start(&fifo_tx, &fifo_rx);
 		ERR_CHK(ret);
 	}
-	else
-	{
-		ret = hw_codec_default_conf_enable();
-		ERR_CHK(ret);
 
-		ret = audio_datapath_start(&fifo_rx);
-		ERR_CHK(ret);
-	}
+	ret = hw_codec_default_conf_enable();
+	ERR_CHK(ret);
+
+	ret = audio_datapath_start(&fifo_rx);
+	ERR_CHK(ret);
 }
 
 void audio_system_stop(void)
@@ -344,14 +342,12 @@ void audio_system_stop(void)
 	{
 		audio_usb_stop();
 	}
-	else
-	{
-		ret = hw_codec_soft_reset();
-		ERR_CHK(ret);
+	
+	ret = hw_codec_soft_reset();
+	ERR_CHK(ret);
 
-		ret = audio_datapath_stop();
-		ERR_CHK(ret);
-	}
+	ret = audio_datapath_stop();
+	ERR_CHK(ret);
 
 	ret = sw_codec_uninit(sw_codec_cfg);
 	ERR_CHK_MSG(ret, "Failed to uninit codec");
@@ -388,14 +384,12 @@ void audio_system_init(void)
 		ret = audio_usb_init();
 		ERR_CHK(ret);
 	}
-	else
-	{
-		ret = audio_datapath_init();
-		ERR_CHK(ret);
-		audio_i2s_init();
-		ret = hw_codec_init();
-		ERR_CHK(ret);
-	}
+	
+	ret = audio_datapath_init();
+	ERR_CHK(ret);
+	audio_i2s_init();
+	ret = hw_codec_init();
+	ERR_CHK(ret);
 }
 
 static int cmd_audio_system_start(const struct shell *shell, size_t argc, const char **argv)

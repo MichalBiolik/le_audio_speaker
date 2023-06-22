@@ -51,6 +51,8 @@ static uint32_t seq_num[CONFIG_BT_AUDIO_BROADCAST_SRC_STREAM_COUNT];
 
 static struct bt_le_ext_adv *adv;
 
+static le_audio_receive_cb receive_cb;
+
 static bool is_iso_buffer_full(uint8_t idx)
 {
 	/* net_buf_alloc allocates buffers for APP->NET transfer over HCI RPMsg,
@@ -453,6 +455,7 @@ int le_audio_send_gateway(struct encoded_audio enc_audio)
 
 		atomic_inc(&iso_tx_pool_alloc[i]);
 
+		// receive_cb(enc_audio.data, enc_audio.size, false, 0, enc_audio.num_ch);
 		ret = bt_audio_stream_send(&audio_streams[i], buf, seq_num[i]++,
 					   BT_ISO_TIMESTAMP_NONE);
 		if (ret < 0) {
@@ -486,6 +489,7 @@ int le_audio_enable_gateway(le_audio_receive_cb recv_cb)
 
 	LOG_INF("Starting broadcast gateway %s", CONFIG_BT_AUDIO_BROADCAST_NAME);
 
+	receive_cb = recv_cb;
 	ret = initialize();
 	if (ret) {
 		LOG_ERR("Failed to initialize");
