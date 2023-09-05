@@ -71,6 +71,14 @@ config NRFX_I2S
 	bool
 	default y
 
+config NRFX_SPI
+	bool
+	default y
+
+config NRFX_SPIS2
+	bool
+	default y
+
 config PCM_MIX
 	bool
 	default y

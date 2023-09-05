@@ -20,6 +20,7 @@
 #include "contin_array.h"
 #include "pcm_stream_channel_modifier.h"
 #include "audio_usb.h"
+#include "audio_spi.h"
 #include "streamctrl.h"
 
 #include <zephyr/logging/log.h>
@@ -180,6 +181,9 @@ int audio_encode_test_tone_set(uint32_t freq)
 
 	ret = tone_gen(test_tone_buf, &test_tone_size, freq, CONFIG_AUDIO_SAMPLE_RATE_HZ, 1);
 	ERR_CHK(ret);
+
+	LOG_INF("HZ %d, size %d", freq, test_tone_size);
+	LOG_INF("%d %d", test_tone_buf[0], test_tone_buf[1]);
 
 	if (test_tone_size > sizeof(test_tone_buf)) {
 		return -ENOMEM;
@@ -381,6 +385,7 @@ void audio_system_init(void)
 
 	if ((config_audio_dev_var == GATEWAY) && (CONFIG_AUDIO_SOURCE_USB))
 	{
+		audio_spi_init();
 		ret = audio_usb_init();
 		ERR_CHK(ret);
 	}
