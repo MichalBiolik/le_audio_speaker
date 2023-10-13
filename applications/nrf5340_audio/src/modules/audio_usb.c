@@ -14,6 +14,10 @@
 #include "data_fifo.h"
 
 #include <zephyr/logging/log.h>
+
+#include "audio_datapath.h"
+#include "audio_sync_timer.h"
+
 LOG_MODULE_REGISTER(audio_usb, CONFIG_MODULE_AUDIO_USB_LOG_LEVEL);
 
 #define USB_FRAME_SIZE_STEREO                                                                      \
@@ -63,6 +67,11 @@ static void data_write(const struct device *dev)
 }
 #endif /* (CONFIG_STREAM_BIDIRECTIONAL) */
 
+static int16_t audio_data[960];
+static uint8_t audio_data2[1920];
+static uint16_t buf_count = 0;
+
+#include "pcm_stream_channel_modifier.h"
 static void data_received(const struct device *dev, struct net_buf *buffer, size_t size)
 {
 	int ret;
@@ -85,6 +94,48 @@ static void data_received(const struct device *dev, struct net_buf *buffer, size
 		net_buf_unref(buffer);
 		return;
 	}
+
+	// Added code
+	// uint8_t pcm_data_mono[2][192];
+	// size_t size_mono = 0;
+	// ret = pscm_two_channel_split(buffer->data, 192, CONFIG_AUDIO_BIT_DEPTH_BITS,
+	// 				     pcm_data_mono[AUDIO_CH_L], pcm_data_mono[AUDIO_CH_R],
+	// 				     &size_mono);
+
+	// LOG_INF("size_mono %d", size_mono);
+	LOG_INF("Size %d, net len %d", size, buffer->len);
+
+	static uint32_t recv_frame_ts_us;
+	if (buf_count == 0)
+	{
+		recv_frame_ts_us = audio_sync_timer_curr_time_get();
+	}
+
+	// uint8_t data[192];
+	// for (uint16_t i = 0; i < 192; i+=4)
+	// {
+	// 	data[i] = buffer->data[i+2];
+	// 	data[i+1] = buffer->data[i+1+2];
+	// }
+
+	// idea ?
+	// for (uint16_t i = 0; i < 192; i+=4)
+	// {
+	// 	data[i] = buffer->data[i+2];
+	// 	data[i+1] = buffer->data[i+1+2];
+	// }
+
+
+	memcpy(&audio_data2[192 * buf_count], buffer->data, 192);
+	buf_count++;
+	if (buf_count >= 10)
+	{
+		memcpy(audio_data, audio_data2, 1920);
+		LOG_INF("Sending buffer %d", buf_count * 96 * 2);
+		audio_datapath_add(audio_data, recv_frame_ts_us);
+		buf_count = 0;
+	}
+	// Added code end
 
 	ret = data_fifo_pointer_first_vacant_get(fifo_rx, &data_in, K_NO_WAIT);
 

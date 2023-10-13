@@ -249,23 +249,23 @@ int hw_codec_default_conf_enable(void)
 		return ret;
 	}
 
-	if (config_audio_dev_var == GATEWAY)
-	{
-#if (CONFIG_AUDIO_SOURCE_I2S)
-	if (IS_ENABLED(CONFIG_WALKIE_TALKIE_DEMO)) {
-		ret = cs47l63_comm_reg_conf_write(pdm_mic_enable_configure,
-						  ARRAY_SIZE(pdm_mic_enable_configure));
-		if (ret) {
-			return ret;
-		}
-	} else {
-		ret = cs47l63_comm_reg_conf_write(line_in_enable, ARRAY_SIZE(line_in_enable));
-		if (ret) {
-			return ret;
-		}
-	}
-#endif
-	}
+// 	if (config_audio_dev_var == GATEWAY)
+// 	{
+// #if (CONFIG_AUDIO_SOURCE_I2S)
+// 	if (IS_ENABLED(CONFIG_WALKIE_TALKIE_DEMO)) {
+// 		ret = cs47l63_comm_reg_conf_write(pdm_mic_enable_configure,
+// 						  ARRAY_SIZE(pdm_mic_enable_configure));
+// 		if (ret) {
+// 			return ret;
+// 		}
+// 	} else {
+// 		ret = cs47l63_comm_reg_conf_write(line_in_enable, ARRAY_SIZE(line_in_enable));
+// 		if (ret) {
+// 			return ret;
+// 		}
+// 	}
+// #endif
+// 	}
 
 	// if (config_audio_dev_var == HEADSET)
 	// {

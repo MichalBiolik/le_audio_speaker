@@ -875,6 +875,35 @@ void audio_datapath_stream_out(const uint8_t *buf, size_t size, uint32_t sdu_ref
 	ctrl_blk.out.prod_blk_idx = out_blk_idx;
 }
 
+void audio_datapath_add(uint16_t * p_data, uint32_t recv_frame_ts_us)
+{
+	/*** Add audio data to FIFO buffer ***/
+	int32_t num_blks_in_fifo = ctrl_blk.out.prod_blk_idx - ctrl_blk.out.cons_blk_idx;
+
+	if ((num_blks_in_fifo + NUM_BLKS_IN_FRAME) > FIFO_NUM_BLKS) {
+		LOG_WRN("Output audio stream overrun - Discarding audio frame");
+
+		/* Discard frame to allow consumer to catch up */
+		return;
+	}
+
+	uint32_t out_blk_idx = ctrl_blk.out.prod_blk_idx;
+
+	LOG_INF("EXPECTED %d * %d, offset = %d, frame us %d", NUM_BLKS_IN_FRAME, BLK_STEREO_SIZE_OCTETS, BLK_STEREO_NUM_SAMPS, recv_frame_ts_us);
+	for (uint32_t i = 0; i < NUM_BLKS_IN_FRAME; i++) {
+		memcpy(&ctrl_blk.out.fifo[out_blk_idx * BLK_STEREO_NUM_SAMPS],
+		       &p_data[i * BLK_STEREO_NUM_SAMPS],
+		       BLK_STEREO_SIZE_OCTETS);
+
+		/* Record producer block start reference */
+		ctrl_blk.out.prod_blk_ts[out_blk_idx] = recv_frame_ts_us + (i * BLK_PERIOD_US);
+
+		out_blk_idx = NEXT_IDX(out_blk_idx);
+	}
+
+	ctrl_blk.out.prod_blk_idx = out_blk_idx;
+}
+
 int audio_datapath_start(struct data_fifo *fifo_rx)
 {
 	__ASSERT_NO_MSG(fifo_rx != NULL);
